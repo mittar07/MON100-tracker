@@ -1,0 +1,31 @@
+name: MON100 Daily Signal
+
+on:
+  schedule:
+    # 4:00 UTC = 9:30 AM IST, Monday to Friday
+    - cron: '0 4 * * 1-5'
+  workflow_dispatch:   # allows manual run from GitHub website anytime
+
+jobs:
+  send-signal:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install yfinance pandas numpy requests
+
+      - name: Run MON100 Tracker
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python mon100_tracker.py
